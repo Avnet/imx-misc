@@ -1,0 +1,5 @@
+How to flash a linux image
+
+1 copy the uboot.imx and linux image to replace the *.img  *.imx
+2 power on the board and connect the USB0 to PC
+3 click the *.bat to start flashing image

@@ -1,0 +1,1 @@
+uuu.exe uuu_linux-emmc-mx8mini.lst

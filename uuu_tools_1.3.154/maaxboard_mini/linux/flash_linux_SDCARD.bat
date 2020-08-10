@@ -1,0 +1,1 @@
+uuu.exe uuu_linux-sd-mx8mini.lst

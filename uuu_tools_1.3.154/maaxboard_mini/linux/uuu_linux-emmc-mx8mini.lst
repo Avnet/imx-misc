@@ -1,0 +1,35 @@
+uuu_version 1.3.154
+
+# This command will be run when i.MX8MM, i.MX8MQ
+SDP: boot -f u-boot-imx8mini-uuu.imx
+# This command will be run when use SPL
+
+# These commands will be run when use SPL and will be skipped if no spl
+# SDPU will be deprecated. please use SDPV instead of SDPU
+# {
+SDPU: delay 1000
+SDPU: write -f u-boot-imx8mini-uuu.imx -offset 0x57c00
+SDPU: jump
+# }
+
+# These commands will be run when use SPL and will be skipped if no spl
+# if (SPL support SDPV)
+# {
+SDPV: delay 1000
+SDPV: write -f u-boot-imx8mini-uuu.imx -skipspl
+SDPV: jump
+# }
+
+FB: ucmd printenv
+FB: ucmd mmc list
+FB: ucmd setenv fastboot_dev mmc
+FB: ucmd setenv mmcdev ${sd_dev}
+FB: ucmd mmc dev ${sd_dev}
+
+FB: ucmd echo "flash maaxbaord mini"
+# erase environment variables of uboot
+FB: ucmd mmc erase 0x2000 0x8
+FB: flash -raw2sparse all MaaXBoard_Mini-LinuxShipmentImage-Debian.img
+FB: flash bootloader u-boot.imx
+FB: ucmd mmc partconf ${sd_dev} 0 1 0
+FB: done
