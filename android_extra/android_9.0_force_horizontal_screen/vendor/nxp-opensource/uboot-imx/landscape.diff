@@ -1,0 +1,13 @@
+diff --git a/arch/arm/dts/fsl-imx8mm-ddr4-evk.dts b/arch/arm/dts/fsl-imx8mm-ddr4-evk.dts
+index d41a1716d4..4ffbd74c2c 100755
+--- a/arch/arm/dts/fsl-imx8mm-ddr4-evk.dts
++++ b/arch/arm/dts/fsl-imx8mm-ddr4-evk.dts
+@@ -21,7 +21,7 @@
+ 	compatible = "fsl,imx8mm-evk", "fsl,imx8mm";
+ 
+ 	chosen {
+-		bootargs = "console=ttymxc0,115200 earlycon=ec_imx6q,0x30860000,115200";
++		bootargs = "console=ttymxc0,115200 earlycon=ec_imx6q,0x30860000,115200 fbcon=rotate:1";
+ 		stdout-patch = &uart1;
+ 	};
+ 

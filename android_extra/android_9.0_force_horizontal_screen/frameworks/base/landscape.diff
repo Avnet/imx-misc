@@ -1,0 +1,147 @@
+diff --git a/cmds/bootanimation/BootAnimation.cpp b/cmds/bootanimation/BootAnimation.cpp
+old mode 100644
+new mode 100755
+index ed6c25dc49c..17c2711906c
+--- a/cmds/bootanimation/BootAnimation.cpp
++++ b/cmds/bootanimation/BootAnimation.cpp
+@@ -260,8 +260,17 @@ status_t BootAnimation::readyToRun() {
+         return -1;
+ 
+     // create the native surface
+-    sp<SurfaceControl> control = session()->createSurface(String8("BootAnimation"),
+-            dinfo.w, dinfo.h, PIXEL_FORMAT_RGB_565);
++    //sp<SurfaceControl> control = session()->createSurface(String8("BootAnimation"),
++    //        dinfo.w, dinfo.h, PIXEL_FORMAT_RGB_565);
++    //For Landscape Orientation
++    sp<SurfaceControl> control;
++    if(dinfo.w < dinfo.h)
++	    control = session()->createSurface(String8("BootAnimation"),
++				dinfo.h, dinfo.w, PIXEL_FORMAT_RGB_565);
++    else
++	    control = session()->createSurface(String8("BootAnimation"),
++				dinfo.w, dinfo.h, PIXEL_FORMAT_RGB_565);
++
+ 
+     SurfaceComposerClient::Transaction t;
+     t.setLayer(control, 0x40000000)
+diff --git a/core/res/res/values/config.xml b/core/res/res/values/config.xml
+index edeaa1e4ec3..8c84600799d 100644
+--- a/core/res/res/values/config.xml
++++ b/core/res/res/values/config.xml
+@@ -782,7 +782,9 @@
+          landscape will cause a clockwise rotation, and on a landscape device an
+          app requesting portrait will cause a counter-clockwise rotation.  Setting
+          true here reverses that logic. -->
+-    <bool name="config_reverseDefaultRotation">false</bool>
++    <!-- bool name="config_reverseDefaultRotation">false</bool
++	 For Landscape Orientation -->
++    <bool name="config_reverseDefaultRotation">true</bool>
+ 
+     <!-- Sets the minimum and maximum tilt tolerance for each possible rotation.
+          This array consists of 4 pairs of values which specify the minimum and maximum
+@@ -825,7 +827,9 @@
+ 
+     <!-- The number of degrees to rotate the display when the keyboard is open.
+          A value of -1 means no change in orientation by default. -->
+-    <integer name="config_lidOpenRotation">-1</integer>
++    <!-- integer name="config_lidOpenRotation">-1</integer
++	 For Landscape Orientation -->
++    <integer name="config_lidOpenRotation">90</integer>
+ 
+     <!-- Indicate whether the lid state impacts the accessibility of
+          the physical keyboard.  0 means it doesn't, 1 means it is accessible
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/phone/NavigationBarView.java b/packages/SystemUI/src/com/android/systemui/statusbar/phone/NavigationBarView.java
+old mode 100644
+new mode 100755
+index f8b79c61c43..8ed39e5d590
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/phone/NavigationBarView.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/phone/NavigationBarView.java
+@@ -951,10 +951,16 @@ public class NavigationBarView extends FrameLayout implements PluginListener<Nav
+     }
+ 
+     private void updateRotatedViews() {
++	/*
+         mRotatedViews[Surface.ROTATION_0] =
+                 mRotatedViews[Surface.ROTATION_180] = findViewById(R.id.rot0);
+         mRotatedViews[Surface.ROTATION_270] =
+                 mRotatedViews[Surface.ROTATION_90] = findViewById(R.id.rot90);
++	*/ //For Landscape Orientation
++        mRotatedViews[Surface.ROTATION_0] =
++                mRotatedViews[Surface.ROTATION_180] = findViewById(R.id.rot90);
++        mRotatedViews[Surface.ROTATION_270] =
++                mRotatedViews[Surface.ROTATION_90] = findViewById(R.id.rot0);
+ 
+         updateCurrentView();
+     }
+diff --git a/services/core/java/com/android/server/policy/PhoneWindowManager.java b/services/core/java/com/android/server/policy/PhoneWindowManager.java
+old mode 100644
+new mode 100755
+index 12beb07c4c4..feb5c0d707c
+--- a/services/core/java/com/android/server/policy/PhoneWindowManager.java
++++ b/services/core/java/com/android/server/policy/PhoneWindowManager.java
+@@ -4977,6 +4977,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
+ 
+     @NavigationBarPosition
+     private int navigationBarPosition(int displayWidth, int displayHeight, int displayRotation) {
++	/*
+         if (mNavigationBarCanMove && displayWidth > displayHeight) {
+             if (displayRotation == Surface.ROTATION_270) {
+                 return NAV_BAR_LEFT;
+@@ -4984,6 +4985,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
+                 return NAV_BAR_RIGHT;
+             }
+         }
++	*/ //For Landscape Orientation
+         return NAV_BAR_BOTTOM;
+     }
+ 
+@@ -7453,7 +7455,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
+                     if (preferredRotation >= 0) {
+                         return preferredRotation;
+                     }
+-                    return Surface.ROTATION_0;
++                    //return Surface.ROTATION_0;
++                    return Surface.ROTATION_90; //For Landscape Orientation
+             }
+         }
+     }
+diff --git a/services/core/java/com/android/server/wm/DisplayContent.java b/services/core/java/com/android/server/wm/DisplayContent.java
+old mode 100644
+new mode 100755
+index 59683252c86..9d2ac05f879
+--- a/services/core/java/com/android/server/wm/DisplayContent.java
++++ b/services/core/java/com/android/server/wm/DisplayContent.java
+@@ -259,7 +259,8 @@ class DisplayContent extends WindowContainer<DisplayContent.DisplayChildWindowCo
+      *
+      * @see #updateRotationUnchecked()
+      */
+-    private int mRotation = 0;
++    //private int mRotation = 0;
++    private int mRotation = 1;  //For Landscape Orientation
+ 
+     /**
+      * Last applied orientation of the display.
+diff --git a/services/core/java/com/android/server/wm/WindowManagerService.java b/services/core/java/com/android/server/wm/WindowManagerService.java
+old mode 100644
+new mode 100755
+index 8b4a2dd36e6..6180fa8a9fe
+--- a/services/core/java/com/android/server/wm/WindowManagerService.java
++++ b/services/core/java/com/android/server/wm/WindowManagerService.java
+@@ -268,6 +268,7 @@ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.Date;
+ import java.util.List;
++import android.content.pm.ActivityInfo;
+ /** {@hide} */
+ public class WindowManagerService extends IWindowManager.Stub
+         implements Watchdog.Monitor, WindowManagerPolicy.WindowManagerFuncs {
+@@ -2464,7 +2465,8 @@ public class WindowManagerService extends IWindowManager.Stub
+         long ident = Binder.clearCallingIdentity();
+         try {
+             final DisplayContent dc = mRoot.getDisplayContent(displayId);
+-            final int req = dc.getOrientation();
++            //final int req = dc.getOrientation();
++		int req = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE; //For Landscape Orientation
+             if (req != dc.getLastOrientation() || forceUpdate) {
+                 dc.setLastOrientation(req);
+                 //send a message to Policy indicating orientation change to take

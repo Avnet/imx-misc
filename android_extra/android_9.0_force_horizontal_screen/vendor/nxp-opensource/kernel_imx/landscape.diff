@@ -1,0 +1,12 @@
+diff --git a/arch/arm64/configs/maaxboard_mini_android_defconfig b/arch/arm64/configs/maaxboard_mini_android_defconfig
+index 6d8b3bf4173a..926bfc4a8d25 100755
+--- a/arch/arm64/configs/maaxboard_mini_android_defconfig
++++ b/arch/arm64/configs/maaxboard_mini_android_defconfig
+@@ -649,6 +649,7 @@ CONFIG_BACKLIGHT_GENERIC=m
+ CONFIG_BACKLIGHT_PWM=y
+ CONFIG_BACKLIGHT_LP855X=m
+ CONFIG_FRAMEBUFFER_CONSOLE=y
++CONFIG_FRAMEBUFFER_CONSOLE_ROTATION=y
+ CONFIG_LOGO=y
+ # CONFIG_LOGO_LINUX_MONO is not set
+ # CONFIG_LOGO_LINUX_VGA16 is not set

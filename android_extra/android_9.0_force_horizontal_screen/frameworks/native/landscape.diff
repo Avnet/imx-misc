@@ -1,0 +1,46 @@
+diff --git a/services/surfaceflinger/DisplayDevice.cpp b/services/surfaceflinger/DisplayDevice.cpp
+old mode 100644
+new mode 100755
+index db095a51d..d68713931
+--- a/services/surfaceflinger/DisplayDevice.cpp
++++ b/services/surfaceflinger/DisplayDevice.cpp
+@@ -295,7 +295,9 @@ DisplayDevice::DisplayDevice(
+     mHdrCapabilities = HdrCapabilities(types, maxLuminance, maxAverageLuminance, minLuminance);
+ 
+     // initialize the display orientation transform.
+-    setProjection(DisplayState::eOrientationDefault, mViewport, mFrame);
++    //setProjection(DisplayState::eOrientationDefault, mViewport, mFrame);
++    setProjection(DisplayState::eOrientation90, mViewport, mFrame); //For Landscape Orientation
++
+ }
+ 
+ DisplayDevice::~DisplayDevice() = default;
+@@ -571,7 +573,12 @@ void DisplayDevice::setProjection(int orientation,
+     if (!frame.isValid()) {
+         // the destination frame can be invalid if it has never been set,
+         // in that case we assume the whole display frame.
+-        frame = Rect(w, h);
++        //frame = Rect(w, h);
++        //For Landscape Orientation
++        if (w < h)
++             frame = Rect(h, w);
++        else
++             frame = Rect(w, h);
+     }
+ 
+     if (viewport.isEmpty()) {
+diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
+index 28b447f7a..17cc46ba1 100644
+--- a/services/surfaceflinger/SurfaceFlinger.cpp
++++ b/services/surfaceflinger/SurfaceFlinger.cpp
+@@ -3774,7 +3774,9 @@ void SurfaceFlinger::onInitializeDisplays() {
+              DisplayState::eLayerStackChanged;
+     d.token = mBuiltinDisplays[DisplayDevice::DISPLAY_PRIMARY];
+     d.layerStack = 0;
+-    d.orientation = DisplayState::eOrientationDefault;
++    //d.orientation = DisplayState::eOrientationDefault;
++    //For Landscape Orientation
++    d.orientation = DisplayState::eOrientation90;
+     d.frame.makeInvalid();
+     d.viewport.makeInvalid();
+     d.width = 0;

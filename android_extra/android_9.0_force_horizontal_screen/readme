@@ -1,0 +1,11 @@
+
+Maaxboard mini 的 MIPI屏是720*1280，该功能是使android 9.0显示为横屏
+android启动后，开机动画，Launcher桌面，应用程序都是横屏显示效果。
+
+操作方法
+1  应用每个目录中的 landscape.diff
+
+
+其他
+frameworks中有diff.code.tar.gz是修改后的cpp\java代码,留作参考，不用复制。
+
